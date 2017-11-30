@@ -7,9 +7,9 @@
  * Przykładowo wywołanie:
  * 
  * attempt([
- *   () => p.reject(),
- *   () => p.resolve(2),
- *   () => p.resolve(3)
+ *   () => Promise.reject(),
+ *   () => Promise.resolve(2),
+ *   () => Promise.resolve(3)
  * ]);
  * 
  * powinno zwrócić Promise, który rozwiąże się do wartości 2. Trzecia podana funkcja nie powinna

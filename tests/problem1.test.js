@@ -5,11 +5,11 @@
  * 
  * Przykładowo Promise zwracany przez
  * 
- * negation(p.resolve(5));
+ * negation(Promise.resolve(5));
  * 
  * powinien rzucać liczbę 5 jako obiekt błędu, zaś
  * 
- * negation(p.reject(5));
+ * negation(Promise.reject(5));
  * 
  * powinien poprawnie zwracać liczbę 5 jako wartość.
  * 
