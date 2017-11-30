@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --verbose",
+    "test:watch": "jest --watch --verbose"
   },
   "author": "Mateusz Podlasin",
   "license": "ISC",
