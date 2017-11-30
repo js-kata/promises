@@ -5,7 +5,7 @@
  * 
  * Jeśli więc jeden z Promise'ów rozwiąże się poprawnie, a inny rzuci błędem,
  * 'first' powinien zignorować ten, który rzucił błędem i rozwiązać się do 
- * wartości zwróconej przez poprawnie rozwiązany Promise.
+ * wartości zwróconej przez poprawnie rozwiązany p.
  *
  * Przykładowo:
  *
@@ -22,22 +22,23 @@
  *      console.log(err); // loguje listę [4, 3] (błędy rzucone kolejno przez p3 i p4)
  * });
  */
+const p = require('../utils.js');
 
 describe('problem3', () => {
     it('resolves to first resolved value', async () => {
-        const result = await first([Promise.resolve(1), Promise.resolve(5)]);
+        const result = await first([p.resolve(1)(1000), p.resolve(5)(2000)]);
 
         expect(result).toEqual(1);
     });
 
     it('resolves to first resolved value, even if other throw', async () => {
-        const result = await first([Promise.reject(), Promise.resolve(5), Promise.resolve(10)]);
+        const result = await first([p.reject()(), p.resolve(5)(1000), p.resolve(10)(5000)]);
 
         expect(result).toEqual(5);
     });
 
     it('throws array of errors', (done) => {
-        first([Promise.reject(1), Promise.reject(2), Promise.reject(3)])
+        first([p.reject(1)(), p.reject(2)(), p.reject(3)()])
             .catch(e => {
                 expect(e).toEqual([1, 2, 3]);
                 done();

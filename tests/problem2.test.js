@@ -7,9 +7,9 @@
  * Przykładowo wywołanie:
  * 
  * attempt([
- *   () => Promise.reject(),
- *   () => Promise.resolve(2),
- *   () => Promise.resolve(3)
+ *   () => p.reject(),
+ *   () => p.resolve(2),
+ *   () => p.resolve(3)
  * ]);
  * 
  * powinno zwrócić Promise, który rozwiąże się do wartości 2. Trzecia podana funkcja nie powinna
@@ -22,9 +22,11 @@
  * przyjmować po prostu listy Promise'ów?
  */
 
+const p = require('../utils.js');
+
 describe('problem2', () => {
     it('properly resolves with just one promise', async () => {
-        const result = await attempt([() => Promise.resolve(1)]);
+        const result = await attempt([() => p.resolve(1)]);
 
         expect(result).toEqual(1);
     });
@@ -32,9 +34,9 @@ describe('problem2', () => {
     it('returns value of first promise that resolves', async () => {
         const fn3 = jest.fn();
         const result = await attempt([
-            () => Promise.reject(),
-            () => Promise.resolve(1),
-            () => Promise.resolve(2) 
+            () => p.reject(),
+            () => p.resolve(1),
+            () => p.resolve(2) 
         ]);
 
         expect(result).toEqual(1);
@@ -43,8 +45,8 @@ describe('problem2', () => {
     it('does not call functions after resolved one', async () => {
         const fn3 = jest.fn();
         const result = await attempt([
-            () => Promise.reject(),
-            () => Promise.resolve(1),
+            () => p.reject(),
+            () => p.resolve(1),
             fn3
         ]);
 
@@ -54,9 +56,9 @@ describe('problem2', () => {
     it('rejects with last error if all promises rejected', async (done) => {
         try {
             await attempt([
-                () => Promise.reject(),
-                () => Promise.reject(1),
-                () => Promise.reject(2) 
+                () => p.reject(),
+                () => p.reject(1),
+                () => p.reject(2) 
             ]);
         } catch (e) {
             expect(e).toEqual(2);
