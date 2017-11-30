@@ -5,7 +5,7 @@
  * 
  * Jeśli więc jeden z Promise'ów rozwiąże się poprawnie, a inny rzuci błędem,
  * 'first' powinien zignorować ten, który rzucił błędem i rozwiązać się do 
- * wartości zwróconej przez poprawnie rozwiązany p.
+ * wartości zwróconej przez poprawnie rozwiązany Promise.
  *
  * Przykładowo:
  *
