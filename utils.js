@@ -1,13 +1,15 @@
 module.exports = {
-    resolve: (value) =>
-        (timeout) =>
-            new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(value);
-                }, timeout || 0)
-            }),
-    reject: (value) =>
-        (timeout) =>
-            module.exports.resolve(value)(timeout)
+    resolveWith: (value) => ({
+        after: (timeout) =>
+            new Promise((resolve) =>
+                setTimeout(() =>
+                    resolve(value), timeout))
+    }),
+    rejectWith: (value) => ({
+        after: (timeout) =>
+            module.exports
+                .resolveWith(value)
+                .after(timeout)
                 .then(() => Promise.reject(value))
+    })
 };
