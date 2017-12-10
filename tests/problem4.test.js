@@ -8,11 +8,11 @@
     
     Przykład:
 
-    const p1 = resolveInSec(5) // resolves in 5 sec.
-    const p2 = resolveInSec(3) // resolves in 3 sec.
-    const p3 = resolveInSec(2) // resolves in 2 sec.
-    const p4 = resolveInSec(6) // resolves in 6 sec.
-    const r1 = rejectInSec(4) // rejects in 4 sec. 
+    const p1 = p.resolveWith(5).after(5) // resolves in 5 sec.
+    const p2 = p.resolveWith(3).after(3) // resolves in 3 sec.
+    const p3 = p.resolveWith(2).after(2) // resolves in 2 sec.
+    const p4 = p.resolveWith(6).after(6) // resolves in 6 sec.
+    const r1 = p.rejectWith(4).after(4) // rejects in 4 sec. 
 
     takeFirst(2, p1, p2, p3, p4, r1).then(console.log) // [p3, p2, p1]
 
@@ -20,12 +20,9 @@
 
 */
 
-describe('problem4', () => {
-    const setTimeoutPromise = delay => () =>
-        new Promise(resolve => {
-            setTimeout(() => resolve(delay), delay);
-        });
+const p = require('../utils.js');
 
+describe('problem4', () => {
     it('resolves with an array of as many elements as first argument specifies', async () => {
         const result = await takeFirst(
             2,
@@ -43,51 +40,48 @@ describe('problem4', () => {
     });
 
     it('resolves with given number of first resolved promises', async () => {
-        const promise1 = setTimeoutPromise(5);
-        const promise2 = setTimeoutPromise(7);
-        const promise3 = setTimeoutPromise(8);
-        const promise4 = setTimeoutPromise(10);
+        const promise1 = p.resolveWith(5).after(5);
+        const promise2 = p.resolveWith(7).after(7);
+        const promise3 = p.resolveWith(8).after(8);
+        const promise4 = p.resolveWith(10).after(10);
 
         expect(
-            await takeFirst(2, promise1(), promise3(), promise4(), promise2()),
+            await takeFirst(2, promise1, promise3, promise4, promise2),
         ).toEqual([5, 7]);
         expect(
-            await takeFirst(3, promise1(), promise3(), promise4(), promise2()),
+            await takeFirst(3, promise1, promise3, promise4, promise2),
         ).toEqual([5, 7, 8]);
     });
 
     it('rejects if one of the promises rejects before given number of them has been resolved', async () => {
-        const promise1 = setTimeoutPromise(5);
-        const promise2 = setTimeoutPromise(7);
-        const rejectedPromise = Promise.reject('boom');
+        const promise1 = p.resolveWith(5).after(5);
+        const promise2 = p.resolveWith(7).after(7);
+        const rejectedPromise = p.rejectWith('boom').after(1);
 
         expect.assertions(1);
 
         try {
-            await takeFirst(2, promise1(), promise2(), rejectedPromise);
+            await takeFirst(2, promise1, promise2, rejectedPromise);
         } catch (err) {
             expect(err).toBe('boom');
         }
     });
 
     it("doesn't reject if a promise rejects after given number of them has been resolved", async () => {
-        const promise1 = setTimeoutPromise(5);
-        const promise2 = setTimeoutPromise(7);
-        const promise3 = setTimeoutPromise(8);
-        const rejectedPromise = () =>
-            new Promise((_, reject) => {
-                setTimeout(() => reject(), 10);
-            });
+        const promise1 = p.resolveWith(5).after(5);
+        const promise2 = p.resolveWith(7).after(7);
+        const promise3 = p.resolveWith(8).after(8);
+        const rejectedPromise = p.rejectWith().after(10);
 
         expect.assertions(1);
 
         expect(
             await takeFirst(
                 3,
-                promise1(),
-                promise2(),
-                promise3(),
-                rejectedPromise(),
+                promise1,
+                promise2,
+                promise3,
+                rejectedPromise,
             ),
         ).toEqual([5, 7, 8]);
     });
