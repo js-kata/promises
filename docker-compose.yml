@@ -6,4 +6,5 @@ services:
     working_dir: /promises
     volumes:
       - ./:/promises
-    command: "npm run test:watch"
+    stdin_open: true
+    tty: true
