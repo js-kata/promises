@@ -43,22 +43,22 @@ describe('problem4', () => {
     });
 
     it('resolves with given number of first resolved promises', async () => {
-        const promise1 = setTimeoutPromise(500);
-        const promise2 = setTimeoutPromise(700);
-        const promise3 = setTimeoutPromise(800);
-        const promise4 = setTimeoutPromise(1000);
+        const promise1 = setTimeoutPromise(5);
+        const promise2 = setTimeoutPromise(7);
+        const promise3 = setTimeoutPromise(8);
+        const promise4 = setTimeoutPromise(10);
 
         expect(
             await takeFirst(2, promise1(), promise3(), promise4(), promise2()),
-        ).toEqual([500, 700]);
+        ).toEqual([5, 7]);
         expect(
             await takeFirst(3, promise1(), promise3(), promise4(), promise2()),
-        ).toEqual([500, 700, 800]);
+        ).toEqual([5, 7, 8]);
     });
 
     it('rejects if one of the promises rejects before given number of them has been resolved', async () => {
-        const promise1 = setTimeoutPromise(500);
-        const promise2 = setTimeoutPromise(700);
+        const promise1 = setTimeoutPromise(5);
+        const promise2 = setTimeoutPromise(7);
         const rejectedPromise = Promise.reject('boom');
 
         expect.assertions(1);
@@ -68,5 +68,27 @@ describe('problem4', () => {
         } catch (err) {
             expect(err).toBe('boom');
         }
+    });
+
+    it("doesn't reject if a promise rejects after given number of them has been resolved", async () => {
+        const promise1 = setTimeoutPromise(5);
+        const promise2 = setTimeoutPromise(7);
+        const promise3 = setTimeoutPromise(8);
+        const rejectedPromise = () =>
+            new Promise((_, reject) => {
+                setTimeout(() => reject(), 10);
+            });
+
+        expect.assertions(1);
+
+        expect(
+            await takeFirst(
+                3,
+                promise1(),
+                promise2(),
+                promise3(),
+                rejectedPromise(),
+            ),
+        ).toEqual([5, 7, 8]);
     });
 });
