@@ -5,29 +5,31 @@
  * 
  * Przykładowo Promise zwracany przez
  * 
- * negation(Promise.resolve(5));
+ * negation(Promise.resolveWith(5).after(50));
  * 
  * powinien rzucać liczbę 5 jako obiekt błędu, zaś
  * 
- * negation(Promise.reject(5));
+ * negation(Promise.rejectWith(5).after(50));
  * 
  * powinien poprawnie zwracać liczbę 5 jako wartość.
  * 
  */
 
+const p = require('../utils.js');
+
 describe('problem1', () => {
     it('negates resolved promises', (done) => {
-        negation(Promise.resolve(5))
+        negation(p.resolveWith(1).after(10))
             .catch(err => {
-                expect(err).toEqual(5);
+                expect(err).toEqual(1);
                 done();
             })
     });
 
     it('negates rejected promises', (done) => {
-        negation(Promise.reject(5))
+        negation(p.rejectWith(1).after(10))
             .then(err => {
-                expect(err).toEqual(5);
+                expect(err).toEqual(1);
                 done();
             });
     });
