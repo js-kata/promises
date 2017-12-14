@@ -16,6 +16,13 @@
  */
 
 const p = require('../utils.js');
+const negation = async arg => {
+    try {
+        return Promise.reject(await arg)
+    } catch (e) {
+        return e
+    }
+};
 
 describe('problem1', () => {
     it('negates resolved promises', (done) => {

@@ -21,6 +21,24 @@
 */
 
 const p = require('../utils.js');
+const takeFirst = async (count, ...promises) => {
+    return new Promise((resolve, reject) => {
+        if (!promises.length) {
+            resolve([])
+        }
+        const results = [];
+        for (promise of promises) {
+            promise
+                .then(res => {
+                    results.push(res);
+                    if (results.length === count) {
+                        resolve([...results])
+                    }
+                })
+                .catch(e => reject(e))
+        }
+    })
+}
 
 describe('problem4', () => {
     it('resolves with an array of as many elements as first argument specifies', async () => {
