@@ -11,7 +11,7 @@
  *
  * const p1 = p.resolveWith(1).after(5000) // resolves in 5 sec.
  * const p2 = p.resolveWith(2).after(3000) // resolves in 3 sec.
- * const p3 = p.resolveWith(3).after(4000)  // rejects  in 4 sec.
+ * const p3 = p.rejectWith(3).after(4000)  // rejects  in 4 sec.
  * const p4 = p.rejectWith(1).after(2000)  // rejects  in 2 sec.
  *
  * first([p1, p2, p3, p4]).then((value) => {
@@ -56,3 +56,11 @@ describe('problem3', () => {
         });
     });
 });
+
+
+function first(functions) {
+
+    return functions[0]
+        .catch(e => functions.length > 1 ? first(functions.slice(1)) : Promise.reject([e])  )
+
+}
