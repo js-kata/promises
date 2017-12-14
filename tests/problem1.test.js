@@ -15,22 +15,32 @@
  * 
  */
 
-const p = require('../utils.js');
+const p = require("../utils.js");
 
-describe('problem1', () => {
-    it('negates resolved promises', (done) => {
-        negation(p.resolveWith(1).after(10))
-            .catch(err => {
-                expect(err).toEqual(1);
-                done();
-            })
-    });
+const negation = promise => {
+  return new Promise(async (resolve, reject) => {
+    promise
+      .then(response => {
+        reject(response);
+      })
+      .catch(err => {
+        resolve(err);
+      });
+  });
+};
 
-    it('negates rejected promises', (done) => {
-        negation(p.rejectWith(1).after(10))
-            .then(err => {
-                expect(err).toEqual(1);
-                done();
-            });
+describe("problem1", () => {
+  it("negates resolved promises", done => {
+    negation(p.resolveWith(1).after(10)).catch(err => {
+      expect(err).toEqual(1);
+      done();
     });
+  });
+
+  it("negates rejected promises", done => {
+    negation(p.rejectWith(1).after(10)).then(err => {
+      expect(err).toEqual(1);
+      done();
+    });
+  });
 });

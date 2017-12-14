@@ -22,48 +22,63 @@
  * przyjmować po prostu listy Promise'ów?
  */
 
-const p = require('../utils.js');
+const p = require("../utils.js");
 
-describe('problem2', () => {
-    it('properly resolves with just one promise', async () => {
-        const result = await attempt([
-            () => p.resolveWith(1).after(10)
-        ]);
-
-        expect(result).toEqual(1);
-    });
-
-    it('returns value of first promise that resolves', async () => {
-        const result = await attempt([
-            () => p.rejectWith(1).after(10),
-            () => p.resolveWith(5).after(50),
-            () => p.resolveWith(10).after(100)
-        ]);
-
-        expect(result).toEqual(5);
-    });
-
-    it('does not call functions after resolved one', async () => {
-        const fn3 = jest.fn();
-        await attempt([
-            () => p.rejectWith(1).after(10),
-            () => p.resolveWith(5).after(50),
-            fn3
-        ]);
-
-        expect(fn3.mock.calls.length).toBe(0);
-    });
-
-    it('rejects with last error if all promises rejected', async (done) => {
-        try {
-            await attempt([
-                () => p.rejectWith(1).after(10),
-                () => p.rejectWith(5).after(50),
-                () => p.rejectWith(10).after(100)
-            ]);
-        } catch (e) {
-            expect(e).toEqual(10);
-            done();
+const attempt = functions => {
+  return new Promise(async (resolve, reject) => {
+    for (i = 0; i < functions.length; i++) {
+      try {
+        const result = await functions[i]();
+        resolve(result);
+        break;
+      } catch (e) {
+        if (i == functions.length - 1) {
+          reject(e);
+          break;
         }
-    });
+      }
+    }
+  });
+};
+
+describe("problem2", () => {
+  it("properly resolves with just one promise", async () => {
+    const result = await attempt([() => p.resolveWith(1).after(10)]);
+
+    expect(result).toEqual(1);
+  });
+
+  it("returns value of first promise that resolves", async () => {
+    const result = await attempt([
+      () => p.rejectWith(1).after(10),
+      () => p.resolveWith(5).after(50),
+      () => p.resolveWith(10).after(100)
+    ]);
+
+    expect(result).toEqual(5);
+  });
+
+  it("does not call functions after resolved one", async () => {
+    const fn3 = jest.fn();
+    await attempt([
+      () => p.rejectWith(1).after(10),
+      () => p.resolveWith(5).after(50),
+      fn3
+    ]);
+
+    expect(fn3.mock.calls.length).toBe(0);
+  });
+
+  it("rejects with last error if all promises rejected", async done => {
+    try {
+      await attempt([
+        () => p.rejectWith(1).after(10),
+        () => p.rejectWith(5).after(50),
+        () => p.rejectWith(10).after(100)
+      ]);
+    } catch (e) {
+      expect(e).toEqual(10);
+      done();
+    }
+  });
 });
