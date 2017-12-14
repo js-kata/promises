@@ -1,0 +1,10 @@
+version: "2"
+services:
+  node:
+    image: "node:9"
+    user: "node"
+    working_dir: /promises
+    volumes:
+      - ./:/promises
+    stdin_open: true
+    tty: true
