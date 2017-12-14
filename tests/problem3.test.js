@@ -23,36 +23,49 @@
  * });
  */
 
-const p = require('../utils.js');
+const p = require("../utils.js");
 
-describe('problem3', () => {
-    it('resolves to first resolved value', async () => {
-        const result = await first([
-            p.resolveWith(1).after(10),
-            p.resolveWith(5).after(50)
-        ]);
+const first = async promises => {
+  const errors = [];
+  for (prom of promises) {
+    try {
+      return await prom;
+    } catch (e) {
+      errors.push(e);
+    }
+  }
 
-        expect(result).toEqual(1);
+  return Promise.reject(errors);
+};
+
+describe("problem3", () => {
+  it("resolves to first resolved value", async () => {
+    const result = await first([
+      p.resolveWith(1).after(10),
+      p.resolveWith(5).after(50)
+    ]);
+
+    expect(result).toEqual(1);
+  });
+
+  it("resolves to first resolved value, even if other throw", async () => {
+    const result = await first([
+      p.rejectWith(1).after(10),
+      p.resolveWith(5).after(50),
+      p.resolveWith(10).after(100)
+    ]);
+
+    expect(result).toEqual(5);
+  });
+
+  it("throws array of errors", done => {
+    first([
+      p.rejectWith(1).after(10),
+      p.rejectWith(2).after(50),
+      p.rejectWith(3).after(100)
+    ]).catch(e => {
+      expect(e).toEqual([1, 2, 3]);
+      done();
     });
-
-    it('resolves to first resolved value, even if other throw', async () => {
-        const result = await first([
-            p.rejectWith(1).after(10),
-            p.resolveWith(5).after(50),
-            p.resolveWith(10).after(100)
-        ]);
-
-        expect(result).toEqual(5);
-    });
-
-    it('throws array of errors', (done) => {
-        first([
-            p.rejectWith(1).after(10),
-            p.rejectWith(2).after(50),
-            p.rejectWith(3).after(100)
-        ]).catch(e => {
-            expect(e).toEqual([1, 2, 3]);
-            done();
-        });
-    });
+  });
 });
