@@ -24,6 +24,10 @@
 
 const p = require('../utils.js');
 
+const attempt = (promises, last = 0) => promises.length === 0 
+    ? Promise.reject(last)
+    : promises[0]().catch(err => attempt(promises.slice(1), err))
+
 describe('problem2', () => {
     it('properly resolves with just one promise', async () => {
         const result = await attempt([

@@ -25,6 +25,10 @@
 
 const p = require('../utils.js');
 
+const first = (promises, errors = []) => promises.length === 0 
+    ? Promise.reject(errors)
+    : promises[0].catch(err => first(promises.slice(1), errors.push(err)))
+
 describe('problem3', () => {
     it('resolves to first resolved value', async () => {
         const result = await first([
