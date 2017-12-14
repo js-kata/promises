@@ -16,9 +16,7 @@
  */
 
 const p = require('../utils.js');
-
-const negation = promise => promise
-    .then(res => Promise.reject(res), err => err)
+const negation = require('../solutions/problem1')
 
 describe('problem1', () => {
     it('negates resolved promises', (done) => {

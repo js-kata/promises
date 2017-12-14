@@ -21,10 +21,7 @@
 */
 
 const p = require('../utils.js');
-
-const takeFirst = (count, ...promises) => {
-    // :(
-}
+const takeFirst = require('../solutions/problem4')
 
 describe('problem4', () => {
     it('resolves with an array of as many elements as first argument specifies', async () => {
