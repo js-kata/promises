@@ -86,3 +86,11 @@ describe('problem4', () => {
         ).toEqual([5, 7, 8]);
     });
 });
+
+
+function takeFirst(count, ...promises) {
+
+    return promises[0]
+        .catch(e => promises.length > 1 ? takeFirst(promises.slice(1)) : Promise.reject([e]));
+
+}

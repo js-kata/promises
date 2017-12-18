@@ -67,3 +67,12 @@ describe('problem2', () => {
         }
     });
 });
+
+
+
+function attempt(functions) {
+
+    return functions[0]()
+        .catch(e => functions.length > 1 ? attempt(functions.slice(1)) : Promise.reject(e));
+
+}
