@@ -23,6 +23,7 @@
  */
 
 const p = require('../utils.js');
+const attempt = require('../solutions/problem2')
 
 describe('problem2', () => {
     it('properly resolves with just one promise', async () => {

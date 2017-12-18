@@ -24,6 +24,7 @@
  */
 
 const p = require('../utils.js');
+const first = require('../solutions/problem3')
 
 describe('problem3', () => {
     it('resolves to first resolved value', async () => {
