@@ -24,8 +24,23 @@
 
 const p = require('../utils.js');
 
+async function attempt(promises) {
+    let rejected;
+    for (const prom of promises) {
+        try {
+            let result = await prom().then(function(resolved) {
+                return resolved;
+            });
+            return result;
+        } catch (ex) {
+            rejected = ex;
+        }
+    }
+    throw rejected;
+}
+
 describe('problem2', () => {
-    it('properly resolves with just one promise', async () => {
+    it('properly resolves with just one promise', async() => {
         const result = await attempt([
             () => p.resolveWith(1).after(10)
         ]);
@@ -33,7 +48,7 @@ describe('problem2', () => {
         expect(result).toEqual(1);
     });
 
-    it('returns value of first promise that resolves', async () => {
+    it('returns value of first promise that resolves', async() => {
         const result = await attempt([
             () => p.rejectWith(1).after(10),
             () => p.resolveWith(5).after(50),
@@ -43,7 +58,7 @@ describe('problem2', () => {
         expect(result).toEqual(5);
     });
 
-    it('does not call functions after resolved one', async () => {
+    it('does not call functions after resolved one', async() => {
         const fn3 = jest.fn();
         await attempt([
             () => p.rejectWith(1).after(10),
@@ -54,7 +69,7 @@ describe('problem2', () => {
         expect(fn3.mock.calls.length).toBe(0);
     });
 
-    it('rejects with last error if all promises rejected', async (done) => {
+    it('rejects with last error if all promises rejected', async(done) => {
         try {
             await attempt([
                 () => p.rejectWith(1).after(10),

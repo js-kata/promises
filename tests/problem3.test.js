@@ -11,8 +11,8 @@
  *
  * const p1 = p.resolveWith(1).after(5000) // resolves in 5 sec.
  * const p2 = p.resolveWith(2).after(3000) // resolves in 3 sec.
- * const p3 = p.resolveWith(3).after(4000)  // rejects  in 4 sec.
- * const p4 = p.rejectWith(1).after(2000)  // rejects  in 2 sec.
+ * const p3 = p.rejectWith(3).after(4000)  // rejects  in 4 sec.
+ * const p4 = p.rejectWith(4).after(2000)  // rejects  in 2 sec.
  *
  * first([p1, p2, p3, p4]).then((value) => {
  *      console.log(value); // loguje 2 (wartość zwróconą przez p2)
@@ -25,8 +25,36 @@
 
 const p = require('../utils.js');
 
+function negation(toNegate) {
+    return toNegate.then(function(resolved) {
+        return Promise.reject(resolved);
+    }, function(rejected) {
+        return Promise.resolve(rejected);
+    })
+}
+
+async function first(promises) {
+    let errors = [];
+    const negated = promises.map(prom => negation(prom));
+    return Promise.all(negated).then(function(values) {
+        throw values;
+    }, function(ex) {
+        return ex;
+    });
+    /*
+        promises.forEach(prom =>
+            prom
+            .then(function(value) {
+                resolved.push(value);
+            })
+            .catch(function(ex) {
+                errors.push(ex);
+            }));
+        return resolved.length > 0 ? resolved[0] : errors;*/
+}
+
 describe('problem3', () => {
-    it('resolves to first resolved value', async () => {
+    it('resolves to first resolved value', async() => {
         const result = await first([
             p.resolveWith(1).after(50),
             p.resolveWith(5).after(10)
@@ -35,7 +63,7 @@ describe('problem3', () => {
         expect(result).toEqual(5);
     });
 
-    it('resolves to first resolved value, even if other throw', async () => {
+    it('resolves to first resolved value, even if other throw', async() => {
         const result = await first([
             p.rejectWith(1).after(10),
             p.resolveWith(5).after(100),
