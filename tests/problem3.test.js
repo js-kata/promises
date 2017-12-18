@@ -24,6 +24,17 @@
  */
 
 const p = require('../utils.js');
+const first = async (promises) => {
+    const errors = [];
+    for (promise of promises) {
+        try {
+            return await promise;
+        } catch (e) {
+            errors.push(e);
+        }
+    }
+    throw errors;
+}
 
 describe('problem3', () => {
     it('resolves to first resolved value', async () => {

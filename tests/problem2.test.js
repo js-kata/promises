@@ -23,6 +23,17 @@
  */
 
 const p = require('../utils.js');
+const attempt = async (funcs) => {
+    let error;
+    for (func of funcs) {
+        try {
+            return await func();
+        } catch (e) {
+            error = e;     
+        }
+    }
+    throw error;
+};
 
 describe('problem2', () => {
     it('properly resolves with just one promise', async () => {
