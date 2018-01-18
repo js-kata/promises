@@ -16,6 +16,7 @@
  */
 
 const p = require('../utils.js');
+const { negation } = require('../src/problem1');
 
 describe('problem1', () => {
     it('negates resolved promises', (done) => {
