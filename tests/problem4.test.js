@@ -14,13 +14,40 @@
     const p4 = p.resolveWith(6).after(6) // resolves in 6 sec.
     const r1 = p.rejectWith(4).after(4) // rejects in 4 sec. 
 
-    takeFirst(2, p1, p2, p3, p4, r1).then(console.log) // [p3, p2, p1]
+    takeFirst(2, p1, p2, p3, p4, r1).then(console.log) // [p3, p2]
 
     takeFirst(2, p1, p4, r1).catch(console.log) // error thrown by r1
 
 */
 
 const p = require('../utils.js');
+
+let takeFirst = (count, ...promises) => {
+    count = promises.length < count ? promises.length : count;
+
+    let results = [];
+    return new Promise((resolve, reject) => {
+        if (!promises.length) {
+            resolve([]);
+        }
+
+        promises.map(async promise => {
+            try {
+                let result = await promise;
+
+                if (results.length < count) {
+                    results.push(result);
+                }
+
+                if (results.length === count) {
+                    resolve(results);
+                }
+            } catch(e) {
+                reject(e);
+            }
+        });
+    });
+};
 
 describe('problem4', () => {
     it('resolves with an array of as many elements as first argument specifies', async () => {

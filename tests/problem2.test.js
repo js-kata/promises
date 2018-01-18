@@ -1,11 +1,11 @@
 /**
- * Napisz funkcję 'attempt', która przymuje jako jedyny argument listę funkcji, z których
+ * Napisz funkcję 'attempt', która przyjmuje jako jedyny argument listę funkcji, z których
  * każda zwraca Promise'a. 'attempt' powinien wywołać pierwszą funkcję i jeśli zwrócony
  * Promise zakończył się błędem, wywołać kolejną funkcję z listy, aż któryś Promise zwróci
  * poprawny wynik. 'attempt' powinien zwrócić ten wynik i nie wywoływać już dalszych funkcji.
  *
  * Przykładowo wywołanie:
- *
+
  * attempt([
  *   () => p.rejectWith(1).after(10),
  *   () => p.resolveWith(5).after(50),
@@ -23,6 +23,44 @@
  */
 
 const p = require('../utils.js');
+
+// async await
+// let attempt = async (functions) => {
+//     try {
+//         return await functions[0]();
+//     } catch(e) {
+//         if (functions.length === 1) {
+//             return Promise.reject(e);
+//         }
+//
+//         return await attempt(functions.slice(1, functions.length));
+//     }
+// };
+
+let attempt = (functions) => {
+    return functions[0]().catch((e) => {
+        if (functions.length === 1) {
+            return Promise.reject(e);
+        }
+
+        return attempt(functions.slice(1, functions.length));
+    });
+};
+
+// let attempt = async (functions) => {
+//     do {
+//         try {
+//             return await functions[0]();
+//         } catch (e) {
+//             if (functions.length === 1) {
+//                 return Promise.reject(e);
+//             }
+//         }
+//
+//     } while(functions = functions.slice(1, functions.length));
+//
+//     return Promise.reject('THIS SHOULD NEVER HAPPEN');
+// };
 
 describe('problem2', () => {
     it('properly resolves with just one promise', async () => {
