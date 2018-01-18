@@ -20,9 +20,12 @@
  *
  * PYTANIE DODATKOWE: Czy wiesz, czemu 'attempt' musi przyjmować listę funkcji? Czemu nie mógłby
  * przyjmować po prostu listy Promise'ów?
+ *
+ * ODPOWIEDŻ DODATKOWA: Bo się od razu odpali i trzecia podana funkcja w ogóle zostanie wywołana.
  */
 
 const p = require('../utils.js');
+const {attempt} = require('../src/problem2');
 
 describe('problem2', () => {
     it('properly resolves with just one promise', async () => {
