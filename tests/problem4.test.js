@@ -40,16 +40,16 @@ describe('problem4', () => {
     });
 
     it('resolves with given number of first resolved promises', async () => {
-        const promise1 = p.resolveWith(5).after(5);
-        const promise2 = p.resolveWith(7).after(7);
-        const promise3 = p.resolveWith(8).after(8);
-        const promise4 = p.resolveWith(10).after(10);
+        const promise1 = () => p.resolveWith(5).after(5);
+        const promise2 = () => p.resolveWith(7).after(7);
+        const promise3 = () => p.resolveWith(8).after(8);
+        const promise4 = () => p.resolveWith(10).after(10);
 
         expect(
-            await takeFirst(2, promise1, promise3, promise4, promise2),
+            await takeFirst(2, promise1(), promise3(), promise4(), promise2()),
         ).toEqual([5, 7]);
         expect(
-            await takeFirst(3, promise1, promise3, promise4, promise2),
+            await takeFirst(3, promise1(), promise3(), promise4(), promise2()),
         ).toEqual([5, 7, 8]);
     });
 
@@ -76,13 +76,23 @@ describe('problem4', () => {
         expect.assertions(1);
 
         expect(
-            await takeFirst(
-                3,
-                promise1,
-                promise2,
-                promise3,
-                rejectedPromise,
-            ),
+            await takeFirst(3, promise1, promise2, promise3, rejectedPromise),
         ).toEqual([5, 7, 8]);
     });
+
+    it("doesn't wait for all Promises to resolve/reject", async () => {
+        jest.useFakeTimers();
+
+        const promise1 = p.resolveWith(5).after(5);
+        const promise2 = p.resolveWith(7).after(7);
+        const promise3 = p.resolveWith(8).after(8);
+
+        expect.assertions(1);
+
+        jest.runTimersToTime(7);
+        
+        expect(
+            await takeFirst(2, promise1, promise2, promise3),
+        ).toEqual([5, 7]);
+    })
 });
