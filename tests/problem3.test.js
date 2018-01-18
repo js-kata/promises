@@ -25,34 +25,53 @@
 
 const p = require('../utils.js');
 
+const first = async (arrProm) => {
+  let lastResolved = null;
+  let errorList = [];
+
+  for (let i = 0; i < arrProm.length; i++) {
+    try {
+      lastResolved = await arrProm[i];
+    } catch (e) {
+      errorList.push(e);
+    }
+  }
+
+  if (lastResolved === null) {
+    throw errorList;
+  }
+
+  return lastResolved;
+};
+
 describe('problem3', () => {
-    it('resolves to first resolved value', async () => {
-        const result = await first([
-            p.resolveWith(1).after(50),
-            p.resolveWith(5).after(10)
-        ]);
+  it('resolves to first resolved value', async () => {
+    const result = await first([
+      p.resolveWith(1).after(50),
+      p.resolveWith(5).after(10),
+    ]);
 
-        expect(result).toEqual(5);
+    expect(result).toEqual(5);
+  });
+
+  it('resolves to first resolved value, even if other throw', async () => {
+    const result = await first([
+      p.rejectWith(1).after(10),
+      p.resolveWith(5).after(100),
+      p.resolveWith(10).after(50),
+    ]);
+
+    expect(result).toEqual(10);
+  });
+
+  it('throws array of errors if all promises throw', (done) => {
+    first([
+      p.rejectWith(1).after(10),
+      p.rejectWith(2).after(50),
+      p.rejectWith(3).after(100),
+    ]).catch((e) => {
+      expect(e).toEqual([1, 2, 3]);
+      done();
     });
-
-    it('resolves to first resolved value, even if other throw', async () => {
-        const result = await first([
-            p.rejectWith(1).after(10),
-            p.resolveWith(5).after(100),
-            p.resolveWith(10).after(50)
-        ]);
-
-        expect(result).toEqual(10);
-    });
-
-    it('throws array of errors if all promises throw', (done) => {
-        first([
-            p.rejectWith(1).after(10),
-            p.rejectWith(2).after(50),
-            p.rejectWith(3).after(100)
-        ]).catch(e => {
-            expect(e).toEqual([1, 2, 3]);
-            done();
-        });
-    });
+  });
 });
